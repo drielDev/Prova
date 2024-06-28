@@ -45,7 +45,6 @@ function TarefaAlterar() {
       TarefaId: id,
       titulo: "", 
       descricao: "",
-      Categoria: "", 
       Status: novoStatus,
     };
 

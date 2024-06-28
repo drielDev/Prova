@@ -2,6 +2,7 @@ import React from "react";
 import { BrowserRouter, Link, Routes, Route } from "react-router-dom";
 import TarefaAlterar from "./components/pages/TarefaAlterar";
 import TarefaListar from "./components/pages/TarefaListar";
+import TarefaCadastrar from "./components/pages/TarefaCadastrar";
 
 function App() {
   return (
@@ -26,8 +27,8 @@ function App() {
         <Routes>
           <Route path="/" element={<TarefaListar />} />
           <Route path="/pages/tarefa/listar" element={<TarefaListar />} />
-
           <Route path="/pages/tarefa/alterar/:e5d4a7b9-1f9e-4c4a-ae3b-5b7c1a9d2e3f" element={<TarefaAlterar />} />
+          <Route path="/pages/tarefa/cadastrar" element={<TarefaCadastrar />} />
         </Routes>
       </BrowserRouter>
     </div>
