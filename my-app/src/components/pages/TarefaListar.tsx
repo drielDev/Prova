@@ -11,7 +11,7 @@ function TarefaListar() {
   }, []);
 
   function carregarTarefas() {
-    fetch("http://localhost:5273/tarefas/listar")
+    fetch("http://localhost:5206/tarefas/listar")
       .then((resposta) => {
         if (resposta.ok) {
           return resposta.json();

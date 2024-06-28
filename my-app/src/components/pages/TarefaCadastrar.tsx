@@ -1,24 +1,21 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Categoria } from "../../models/Categoria";
+import { Tarefa } from "../../models/Tarefa";
 
-import { useNavigate, useParams } from "react-router-dom";
-
-
-function TarefaAlterar() {
+function TarefaCadastrar() {
   const navigate = useNavigate();
-  const { id } = useParams<{ id: string }>();
   const [titulo, setTitulo] = useState("");
   const [descricao, setDescricao] = useState("");
   const [categoriaId, setCategoriaId] = useState("");
   const [categorias, setCategorias] = useState<Categoria[]>([]);
-  const [status, setStatus] = useState("");
 
   useEffect(() => {
     carregarCategorias();
-    carregarTarefa();
-  }, [id]);
+  }, []);
 
   function carregarCategorias() {
-    fetch("http://localhost:5225/api/categoria/listar")
+    fetch("http://localhost:5206/api/categoria/listar")
       .then((resposta) => resposta.json())
       .then((categorias: Categoria[]) => {
         setCategorias(categorias);
@@ -28,41 +25,26 @@ function TarefaAlterar() {
       });
   }
 
-  function carregarTarefa() {
-    fetch(`http://localhost:5225/api/tarefa/${id}`)
-      .then((resposta) => resposta.json())
-      .then((tarefa: Tarefa) => {
-        setTitulo(tarefa.titulo);
-        setDescricao(tarefa.descricao);
-        setCategoriaId(tarefa.CategoriaId ?? "");
-        setStatus(tarefa.Status);
-      })
-      .catch((error) => {
-        console.error("Erro ao carregar tarefa:", error);
-      });
-  }
-
-  function alterarTarefa(e: React.FormEvent<HTMLFormElement>) {
+  function cadastrarTarefa(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    const tarefaAtualizada: Tarefa = {
-      TarefaId: id,
+    const novaTarefa: Tarefa = {
       titulo: titulo,
       descricao: descricao,
       CategoriaId: categoriaId,
-      Status: status,
+      Status: "Não iniciada",
     };
 
-    fetch("http://localhost:5225/api/tarefa/alterar", {
-      method: "PUT",
+    fetch("http://localhost:5206/api/tarefa/cadastrar", {
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(tarefaAtualizada),
+      body: JSON.stringify(novaTarefa),
     })
       .then((resposta) => {
         if (!resposta.ok) {
-          throw new Error("Erro ao alterar tarefa");
+          throw new Error("Erro ao cadastrar tarefa");
         }
         return resposta.json();
       })
@@ -70,14 +52,14 @@ function TarefaAlterar() {
         navigate("/pages/tarefa/listar");
       })
       .catch((error) => {
-        console.error("Erro ao alterar tarefa:", error);
+        console.error("Erro ao cadastrar tarefa:", error);
       });
   }
 
   return (
     <div>
-      <h1>Alterar Tarefa</h1>
-      <form onSubmit={alterarTarefa}>
+      <h1>Cadastrar Tarefa</h1>
+      <form onSubmit={cadastrarTarefa}>
         <label>Título:</label>
         <input
           type="text"
@@ -104,35 +86,10 @@ function TarefaAlterar() {
           ))}
         </select>
         <br />
-        <label>Status:</label>
-        <input
-          type="text"
-          placeholder="Digite o status"
-          value={status}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setStatus(e.target.value)}
-        />
-        <br />
-        <button type="submit">Alterar</button>
+        <button type="submit">Cadastrar</button>
       </form>
     </div>
   );
 }
 
-export default TarefaAlterar;
-
-// Definição das interfaces Tarefa e Categoria
-
-export interface Tarefa {
-  TarefaId?: string;
-  titulo: string;
-  descricao: string;
-  CriadoEm?: number;
-  CategoriaId?: string;
-  Status: string;
-}
-
-export interface Categoria {
-  CategoriaId?: string;
-  nome: string;
-  CriadoEm?: number;
-}
+export default TarefaCadastrar;
