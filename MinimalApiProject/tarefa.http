@@ -1,0 +1,26 @@
+### Listar todas as tarefas
+GET http://localhost:5206/tarefas/listar
+
+### Cadastrar uma nova tarefa
+POST http://localhost:5206/tarefas/cadastrar
+Content-Type: application/json
+
+{
+    "titulo": "Estudar Node.js",
+    "descricao": "Estudar Node.js para desenvolver aplicações web",
+    "categoriaId": "6d091456-5a2f-4b5a-98fc-f1a3b50a627d"
+}
+
+### Alterar uma tarefa
+PUT http://localhost:5206/tarefas/alterar/a361023c-65de-453d-b131-62c15afff5d9
+Content-Type: application/json
+
+{
+    "Status": "Concluída"
+}
+
+### listar tarrefas nao concluidas
+GET http://localhost:5206/tarefas/naoconcluidas
+
+### listar tarefas concluidas
+GET http://localhost:5206/tarefas/concluidas
