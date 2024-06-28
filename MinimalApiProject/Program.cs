@@ -5,6 +5,16 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AppDataContext>();
 
+//Configurar a política de CORS
+builder.Services.AddCors(options =>
+    options.AddPolicy("Acesso Total",
+        configs => configs
+            .AllowAnyOrigin()
+            .AllowAnyHeader()
+            .AllowAnyMethod())
+);
+
+
 var app = builder.Build();
 
 
@@ -57,7 +67,6 @@ app.MapPost("/tarefas/cadastrar", ([FromServices] AppDataContext ctx, [FromBody]
 //PUT: http://localhost:5273/tarefas/alterar/{id}
 app.MapPut("/tarefas/alterar/{id}", (
     [FromRoute] string id,
-    [FromBody] Tarefa tarefaAlterado,
     [FromServices] AppDataContext ctx) =>
 {
     //Implementar a alteração do status da tarefa
@@ -66,7 +75,19 @@ app.MapPut("/tarefas/alterar/{id}", (
     {
         return Results.NotFound("Tarefa não encontrada!");
     }
-    tarefa.Status = tarefaAlterado.Status;
+
+    switch (tarefa.Status)
+    {
+        case "Não iniciada":
+            tarefa.Status = "Em andamento";
+            break;
+        case "Em andamento":
+            tarefa.Status = "Concluída";
+            break;
+        default:
+            return Results.BadRequest("Status da tarefa inválido!");
+    }
+
     ctx.Tarefas.Update(tarefa);
     ctx.SaveChanges();
     return Results.Ok("Tarefa alterada com sucesso!");

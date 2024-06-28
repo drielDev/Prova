@@ -12,12 +12,8 @@ Content-Type: application/json
 }
 
 ### Alterar uma tarefa
-PUT http://localhost:5206/tarefas/alterar/a361023c-65de-453d-b131-62c15afff5d9
+PUT http://localhost:5206/tarefas/alterar/6a8b3e4d-5e4e-4f7e-bdc9-9181e456ad0e
 Content-Type: application/json
-
-{
-    "Status": "Concluída"
-}
 
 ### listar tarrefas nao concluidas
 GET http://localhost:5206/tarefas/naoconcluidas
