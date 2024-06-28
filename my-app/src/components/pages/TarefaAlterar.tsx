@@ -1,41 +1,73 @@
-import { useEffect, useState } from "react";
-import { Tarefa } from "../../models/Tarefa";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { Tarefa } from "../../models/Tarefa";
 
 function TarefaAlterar() {
   const navigate = useNavigate();
-  const { id } = useParams();
-  const [status, setStatus] = useState("");
+  const { id } = useParams<{ id: string }>();
+  const [status, setStatus] = useState<string>("");
 
   useEffect(() => {
     if (id) {
       fetch(`http://localhost:5206/tarefas/alterar/${id}`)
-        .then((resposta) => resposta.json())
+        .then((resposta) => {
+          if (resposta.ok) {
+            return resposta.json();
+          }
+          throw new Error("Falha ao buscar a tarefa");
+        })
         .then((tarefa: Tarefa) => {
           setStatus(tarefa.Status);
+        })
+        .catch((error) => {
+          console.error("Erro ao buscar a tarefa:", error);
         });
     }
   }, [id]);
 
-  function alterarTarefa(e: any) {
+  function alterarTarefa(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+
+    let novoStatus = "";
+    switch (status) {
+      case "Não iniciada":
+        novoStatus = "Em andamento";
+        break;
+      case "Em andamento":
+        novoStatus = "Concluída";
+        break;
+      default:
+        novoStatus = status;
+        break;
+    }
+
     const tarefa: Tarefa = {
-        titulo: "", // Provide a value for the 'titulo' property
-        descricao: "", // Provide a value for the 'descricao' property
-        Categoria: "", // Provide a value for the 'Categoria' property
-        Status: status,
+      TarefaId: id,
+      titulo: "", 
+      descricao: "",
+      Categoria: "", 
+      Status: novoStatus,
     };
+
     fetch(`http://localhost:5206/tarefas/alterar/${id}`, {
-        method: "PUT",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(tarefa),
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(tarefa),
     })
-        .then((resposta) => resposta.json())
-        .then((tarefa: Tarefa) => {
-            navigate("/pages/tarefa/listar");
-        });
+      .then((resposta) => {
+        if (resposta.ok) {
+          return resposta.json();
+        }
+        throw new Error("Falha ao alterar a tarefa");
+      })
+      .then((tarefa: Tarefa) => {
+        navigate("/pages/tarefa/listar");
+      })
+      .catch((error) => {
+        console.error("Erro ao alterar a tarefa:", error);
+      });
   }
 
   return (
@@ -47,7 +79,7 @@ function TarefaAlterar() {
           type="text"
           value={status}
           placeholder="Digite o status"
-          onChange={(e: any) => setStatus(e.target.value)}
+          onChange={(e) => setStatus(e.target.value)}
           required
         />
         <br />
@@ -58,5 +90,3 @@ function TarefaAlterar() {
 }
 
 export default TarefaAlterar;
-
-export {};
